@@ -1,6 +1,9 @@
 package com.example.mathrush;
 
 import android.os.Bundle;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,5 +23,11 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        // Vi skapar puls på vår "PLAY"-knapp
+        Button playButton = findViewById(R.id.playButton);
+        Animation pulse = AnimationUtils.loadAnimation(this, R.anim.pulse);
+        playButton.startAnimation(pulse);
+
     }
 }
