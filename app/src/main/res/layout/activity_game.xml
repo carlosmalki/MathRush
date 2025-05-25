@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
@@ -15,7 +16,7 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/points_icon"
         android:fontFamily="@font/atop"
-        android:text="3"
+        android:text="0"
         android:textColor="#edff8f"
         android:textSize="25dp"
         android:shadowColor="#000000"
@@ -34,7 +35,7 @@
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/streak_record_icon"
         android:fontFamily="@font/atop"
-        android:text="3"
+        android:text="0"
         android:textColor="#edff8f"
         android:textSize="25dp"
         android:shadowColor="#000000"
@@ -106,7 +107,7 @@
             android:layout_margin="8dp" />
 
         <Button
-            android:id="@+id/DivisionButton"
+            android:id="@+id/divisionButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:text="÷"
@@ -117,19 +118,18 @@
             android:layout_margin="8dp" />
     </LinearLayout>
 
-
-    <!-- Tillbaka-knapp -->
     <Button
         android:id="@+id/backButton"
         android:layout_width="116dp"
         android:layout_height="43dp"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/rounded_button"
+        android:fontFamily="@font/atop"
         android:text="Back"
         android:textColor="@color/black"
-        android:fontFamily="@font/atop"
-        android:background="@drawable/rounded_button"
-        android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

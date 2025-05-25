@@ -59,4 +59,44 @@
         app:layout_constraintTop_toBottomOf="@id/letsPlayTitle"
         app:layout_constraintVertical_bias="0.056" />
 
+
+    <!-- Streak Record (text) -->
+    <TextView
+        android:id="@+id/streakRecordText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/atop"
+        android:shadowColor="#000000"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="1"
+        android:text="Last best streak:"
+        android:textColor="#edff8f"
+        android:textSize="25dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+        android:id="@+id/streakRecordNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:drawableLeft="@drawable/streak_record_icon"
+        android:fontFamily="@font/atop"
+        android:shadowColor="#000000"
+        android:shadowDx="0"
+        android:shadowDy="0"
+        android:shadowRadius="1"
+        android:text="0"
+        android:textColor="#edff8f"
+        android:textSize="25dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintStart_toEndOf="@id/streakRecordText"
+        app:layout_constraintBottom_toBottomOf="parent" />
+
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
