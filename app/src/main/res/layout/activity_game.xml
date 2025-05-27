@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/main"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#84ff9f"
     tools:context=".GameActivity">
 
-    <!-- Poäng (vänster) -->
+    <!-- Points Icon -->
     <TextView
         android:id="@+id/pointsNumber"
         android:layout_width="wrap_content"
@@ -28,7 +28,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Streak Record (höger) -->
+    <!-- Streak Icon -->
     <TextView
         android:id="@+id/streakRecordNumber"
         android:layout_width="wrap_content"
@@ -47,21 +47,22 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Titel -->
+    <!-- Title -->
     <TextView
         android:id="@+id/gameSiteTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:visibility="visible"
+        android:fontFamily="@font/atop"
         android:text="CHOOSE A SYMBOL TO PLAY"
         android:textColor="@color/black"
         android:textSize="16sp"
-        android:fontFamily="@font/atop"
-        android:layout_marginTop="24dp"
         app:layout_constraintTop_toBottomOf="@id/pointsNumber"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Symbolknappar -->
+    <!-- Symbol Buttons -->
     <LinearLayout
         android:id="@+id/symbolButtons"
         android:layout_width="wrap_content"
@@ -118,18 +119,143 @@
             android:layout_margin="8dp" />
     </LinearLayout>
 
+    <!-- Math Expression -->
+    <TextView
+        android:id="@+id/mathExpressionBackground"
+        android:layout_width="227dp"
+        android:layout_height="48dp"
+        android:background="@color/white"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:textSize="35dp"
+        android:text="4 + 4"
+        android:visibility="gone"
+        android:fontFamily="@font/beachday"
+        android:inputType="number"
+        app:layout_constraintTop_toBottomOf="@id/symbolButtons"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/restartGameIcon"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp" />
+
+    <!-- Restart Icon -->
+    <TextView
+        android:id="@+id/restartGameIcon"
+        android:layout_width="78dp"
+        android:layout_height="48dp"
+        android:drawableTop="@drawable/restart_game_icon"
+        android:fontFamily="@font/atop"
+        android:gravity="center"
+        android:text="Restart"
+        android:visibility="gone"
+        android:textColor="@color/black"
+        android:textSize="16dp"
+        app:layout_constraintTop_toTopOf="@id/mathExpressionBackground"
+        app:layout_constraintBottom_toBottomOf="@id/mathExpressionBackground"
+        app:layout_constraintStart_toEndOf="@id/mathExpressionBackground"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- Answer Buttons -->
+    <LinearLayout
+        android:id="@+id/answerButtons"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/mathExpressionBackground"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/choiceOne"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_margin="8dp"
+                android:visibility="gone"
+                android:background="@drawable/rounded_button"
+                android:fontFamily="@font/beachday"
+                android:text="5"
+                android:textColor="@color/black"
+                android:textSize="40sp" />
+
+            <Button
+                android:id="@+id/choiceThree"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_margin="8dp"
+                android:visibility="gone"
+                android:background="@drawable/rounded_button"
+                android:fontFamily="@font/beachday"
+                android:text="8"
+                android:textColor="@color/black"
+                android:textSize="40sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/choiceTwo"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_margin="8dp"
+                android:visibility="gone"
+                android:background="@drawable/rounded_button"
+                android:fontFamily="@font/beachday"
+                android:text="4"
+                android:textColor="@color/black"
+                android:textSize="40sp" />
+
+            <Button
+                android:id="@+id/choiceFour"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_margin="8dp"
+                android:visibility="gone"
+                android:background="@drawable/rounded_button"
+                android:fontFamily="@font/beachday"
+                android:text="19"
+                android:textColor="@color/black"
+                android:textSize="40sp" />
+        </LinearLayout>
+    </LinearLayout>
+    <!-- Generate New Expression -->
     <Button
-        android:id="@+id/backButton"
-        android:layout_width="116dp"
-        android:layout_height="43dp"
-        android:layout_marginBottom="24dp"
+        android:id="@+id/newExpressionButton"
+        android:layout_width="259dp"
+        android:layout_height="51dp"
+        android:visibility="gone"
+        android:layout_marginBottom="64dp"
         android:background="@drawable/rounded_button"
         android:fontFamily="@font/atop"
-        android:text="Back"
+        android:text="Generate New Expression"
         android:textColor="@color/black"
+        android:textSize="15dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        android:id="@+id/answerFeedbackText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="264dp"
+        android:fontFamily="@font/beachday"
+        android:gravity="center"
+        android:text="Correct!"
+        android:textColor="@color/black"
+        android:textSize="25dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
