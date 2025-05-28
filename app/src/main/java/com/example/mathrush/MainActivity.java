@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,8 @@ import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity {
 
+
+    private TextView streakRecordNumberMainPage;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +38,14 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, GameActivity.class);
             startActivity(intent);
         });
+
+        // Vi tar den senaste bästa streak och lägger det in i streak record textView:n på start sidan
+//        streakRecordNumberMainPage = findViewById(R.id.streakRecordNumberMainPage);
+//        String latestStreak = getIntent().getStringExtra("theStreak");
+//        if(latestStreak != null) {
+//            streakRecordNumberMainPage.setText(latestStreak);
+//        }
+
 
     }
 }

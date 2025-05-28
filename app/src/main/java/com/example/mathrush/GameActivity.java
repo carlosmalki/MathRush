@@ -1,6 +1,5 @@
 package com.example.mathrush;
 
-
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -18,12 +17,16 @@ import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
 
-    Button additionButton, subtractionButton, multiplicationButton, divisionButton, choiceOne, choiceTwo, choiceThree, choiceFour, newExpressionButton;
-    TextView restartGameIcon, gameSiteTitle, mathExpressionBackground, answerFeedbackText;
-    Random random;
-    boolean harTryckt;
-    int randomNumber1, randomNumber2;
-    String sumText;
+    private Button additionButton, subtractionButton, multiplicationButton, divisionButton, choiceOne, choiceTwo, choiceThree, choiceFour, newExpressionButton;
+    private TextView restartGameIcon, gameSiteTitle, mathExpressionBackground, answerFeedbackText, pointsNumber, streakRecordNumber;
+    private Random random;
+
+    private boolean harTryckt;
+    private int randomNumber1, randomNumber2;
+    private String sumText;
+    private Button[] answerButtonsArray;
+    private int integerPoints;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,15 +53,21 @@ public class GameActivity extends AppCompatActivity {
         choiceTwo = findViewById(R.id.choiceTwo);
         choiceThree = findViewById(R.id.choiceThree);
         choiceFour = findViewById(R.id.choiceFour);
+        streakRecordNumber = findViewById(R.id.streakRecordNumber);
+        pointsNumber = findViewById(R.id.pointsNumber);
         newExpressionButton = findViewById(R.id.newExpressionButton);
         answerFeedbackText = findViewById(R.id.answerFeedbackText);
 
+
+            // Vi uppdaterar streak recorden som finns i start sidan i "MainActivity" via en intent
+//        Intent intent = new Intent(GameActivity.this, MainActivity.class);
+//        intent.putExtra("theStreak", streakRecordNumber.getText());
+//        startActivity(intent);
+
+
+        answerButtonsArray = new Button[] {choiceOne, choiceTwo, choiceThree, choiceFour};
         // Puls på knapparna vid start
-        Animation pulse = AnimationUtils.loadAnimation(this, R.anim.pulse);
-        additionButton.startAnimation(pulse);
-        subtractionButton.startAnimation(pulse);
-        multiplicationButton.startAnimation(pulse);
-        divisionButton.startAnimation(pulse);
+        symbolButtonsAnimation();
 
 
         // När det trycks på "+"-knappen
@@ -79,50 +88,43 @@ public class GameActivity extends AppCompatActivity {
             choiceTwo.setVisibility(View.VISIBLE);
             choiceThree.setVisibility(View.VISIBLE);
             choiceFour.setVisibility(View.VISIBLE);
-            newExpressionButton.setVisibility(View.VISIBLE);
             gameSiteTitle.setVisibility(View.INVISIBLE);
 
-            choiceOne.startAnimation(pulse);
-            choiceTwo.startAnimation(pulse);
-            choiceThree.startAnimation(pulse);
-            choiceFour.startAnimation(pulse);
+            choiceButtonsAnimation();
 
-            // Detta är för att inte det ska genereras nya uttryck då man trycker på symbolknappen, det ska genereras endast vid första klick
-            if(!harTryckt) {
-                harTryckt = true;
-                generateAdditionExpression();
-            }
+            // vi tillåter inte knappen klickas mer än en gång efter första klicket
+           additionButton.setEnabled(false);
+
+            // Vi genererar sedan ett uttryck i spelet
+            generateAdditionExpression();
 
         });
 
         newExpressionButton.setOnClickListener(v -> {
             // Puls på knapparna
-            choiceOne.startAnimation(pulse);
-            choiceTwo.startAnimation(pulse);
-            choiceThree.startAnimation(pulse);
-            choiceFour.startAnimation(pulse);
+            choiceButtonsAnimation();
 
             // generera nytt uttryck
-            generateAdditionExpression();
             answerFeedbackText.setVisibility(View.INVISIBLE);
             answerFeedbackText.setText("");
+            generateAdditionExpression();
+            newExpressionButton.clearAnimation();
+            makingChoiceButtonsClickable();
         });
 
         // Vi startar om allt förutom spelarens "streak" när det trycks på restart iconen
         restartGameIcon.setOnClickListener(v -> {
 
-            choiceOne.clearAnimation();
-            choiceTwo.clearAnimation();
-            choiceThree.clearAnimation();
-            choiceFour.clearAnimation();
+            // Dialog ska in som säger om man vill verkligen restarta allt
+
+
+
+            removeChoiceButtonAnimation();
 
             additionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
 
             // Puls på knapparna
-            additionButton.startAnimation(pulse);
-            subtractionButton.startAnimation(pulse);
-            multiplicationButton.startAnimation(pulse);
-            divisionButton.startAnimation(pulse);
+            symbolButtonsAnimation();
 
             // Här gör vi spel komponenterna osynliga då spelaren har valt att starta om spelet
             mathExpressionBackground.setVisibility(View.INVISIBLE);
@@ -134,12 +136,18 @@ public class GameActivity extends AppCompatActivity {
             newExpressionButton.setVisibility(View.INVISIBLE);
             answerFeedbackText.setVisibility(View.INVISIBLE);
             answerFeedbackText.setText("");
+            newExpressionButton.clearAnimation();
 
             resetChoiceButtonColor();
             generateAdditionExpression();
+            makingChoiceButtonsClickable();
+            resetPoints();
 
             // Vi visar titeln som säger att man ska välja symbol för att spela
             gameSiteTitle.setVisibility(View.VISIBLE);
+
+            // Vi måste kunna trycka på knappen igen då vi restartar spelet.
+            additionButton.setEnabled(true);
 
         });
 
@@ -179,9 +187,6 @@ public class GameActivity extends AppCompatActivity {
         // vi sätter in texten
         mathExpressionBackground.setText(randomNumber1Text+" + "+randomNumber2Text);
 
-        // Här gör vi så att det rätta svaret hamnar på en slumpmässig knapp och sedan sätter fel svar på de resterande knapparna
-        Button[] answerButtonsArray = {choiceOne, choiceTwo, choiceThree, choiceFour};
-
         int randomChoiceButtonIndex = random.nextInt(answerButtonsArray.length);
 
         // Vi sätter svaret i den slumpmässiga knappen
@@ -205,26 +210,44 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
+    // Metod som visar rätt samt fel svar
     public void showCorrectAnswer(Button choicebutton) {
+
         int integerSum = Integer.parseInt(sumText);
         String sumTextOnButton = (String) choicebutton.getText();
         int integerSumOnButton = Integer.parseInt(sumTextOnButton);
+        Animation pulse = AnimationUtils.loadAnimation(this, R.anim.pulse);
 
         if (integerSum == integerSumOnButton) {
+
+            // Ljud ska in här för varje rätt svar
+
+            makingChoiceButtonsUnclickable();
             choicebutton.setBackground(ContextCompat.getDrawable(this, R.drawable.correct_answer_color));
             answerFeedbackText.setTextColor(Color.parseColor("#0E8A07"));
             answerFeedbackText.setText("Correct!");
             answerFeedbackText.setVisibility(View.VISIBLE);
             removeChoiceButtonAnimation();
-
+            givePoint();
+            updateStreakIfNeeded();
+            newExpressionButton.setVisibility(View.VISIBLE);
+            newExpressionButton.startAnimation(pulse);
 
         }
         else {
+
+            // Ljud ska in här för fel svar
+
+            makingChoiceButtonsUnclickable();
             choicebutton.setBackground(ContextCompat.getDrawable(this, R.drawable.wrong_answer_color));
             answerFeedbackText.setTextColor(Color.parseColor("#9E1010"));
-            answerFeedbackText.setText("Wrong!");
+            answerFeedbackText.setText("Wrong! Correct answer is: "+integerSum);
             answerFeedbackText.setVisibility(View.VISIBLE);
             removeChoiceButtonAnimation();
+            resetPoints();
+            newExpressionButton.setVisibility(View.VISIBLE);
+            newExpressionButton.startAnimation(pulse);
+
         }
 
     }
@@ -242,5 +265,70 @@ public class GameActivity extends AppCompatActivity {
         choiceThree.clearAnimation();
         choiceFour.clearAnimation();
     }
+
+    public void makingChoiceButtonsUnclickable() {
+        choiceOne.setEnabled(false);
+        choiceTwo.setEnabled(false);
+        choiceThree.setEnabled(false);
+        choiceFour.setEnabled(false);
+    }
+
+    public void makingChoiceButtonsClickable() {
+        choiceOne.setEnabled(true);
+        choiceTwo.setEnabled(true);
+        choiceThree.setEnabled(true);
+        choiceFour.setEnabled(true);
+    }
+
+    public void symbolButtonsAnimation() {
+        Animation pulse = AnimationUtils.loadAnimation(this, R.anim.pulse);
+        additionButton.startAnimation(pulse);
+        subtractionButton.startAnimation(pulse);
+        multiplicationButton.startAnimation(pulse);
+        divisionButton.startAnimation(pulse);
+    }
+
+    public void choiceButtonsAnimation() {
+        Animation pulse = AnimationUtils.loadAnimation(this, R.anim.pulse);
+        choiceOne.startAnimation(pulse);
+        choiceTwo.startAnimation(pulse);
+        choiceThree.startAnimation(pulse);
+        choiceFour.startAnimation(pulse);
+    }
+
+
+    public void givePoint() {
+        String pointsNumberText = (String) pointsNumber.getText();
+        integerPoints = Integer.parseInt(pointsNumberText);
+        integerPoints++;
+        String UppdatedPointsNumberText = Integer.toString(integerPoints);
+        pointsNumber.setText(UppdatedPointsNumberText);
+    }
+
+
+    public void resetPoints() {
+        integerPoints = 0;
+        String resetPointsNumberText = Integer.toString(integerPoints);
+        pointsNumber.setText(resetPointsNumberText);
+    }
+
+
+    public void updateStreakIfNeeded() {
+        String streakRecordNumberText = (String) streakRecordNumber.getText();
+
+        int integerStreakRecordNumber = Integer.parseInt(streakRecordNumberText);
+        int integerNewStreak;
+        if(integerPoints > integerStreakRecordNumber) {
+
+            // Notis ska in här om "Grattis du har nått en ny streak"
+
+
+            integerNewStreak = integerPoints;
+            String newStreakText = Integer.toString(integerNewStreak);
+            streakRecordNumber.setText(newStreakText);
+
+        }
+    }
+
 
 }

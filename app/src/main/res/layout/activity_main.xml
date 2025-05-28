@@ -79,7 +79,7 @@
         app:layout_constraintBottom_toBottomOf="parent" />
 
     <TextView
-        android:id="@+id/streakRecordNumber"
+        android:id="@+id/streakRecordNumberMainPage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/streak_record_icon"
