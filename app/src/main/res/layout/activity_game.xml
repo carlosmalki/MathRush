@@ -18,7 +18,7 @@
         android:fontFamily="@font/atop"
         android:text="0"
         android:textColor="#edff8f"
-        android:textSize="25dp"
+        android:textSize="35dp"
         android:shadowColor="#000000"
         android:shadowDx="0"
         android:shadowDy="0"
@@ -37,7 +37,7 @@
         android:fontFamily="@font/atop"
         android:text="0"
         android:textColor="#edff8f"
-        android:textSize="25dp"
+        android:textSize="35dp"
         android:shadowColor="#000000"
         android:shadowDx="0"
         android:shadowDy="0"
@@ -57,7 +57,7 @@
         android:fontFamily="@font/atop"
         android:text="CHOOSE A SYMBOL TO PLAY"
         android:textColor="@color/black"
-        android:textSize="16sp"
+        android:textSize="25sp"
         app:layout_constraintTop_toBottomOf="@id/pointsNumber"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -122,7 +122,7 @@
     <!-- Math Expression -->
     <TextView
         android:id="@+id/mathExpressionBackground"
-        android:layout_width="227dp"
+        android:layout_width="304dp"
         android:layout_height="48dp"
         android:background="@color/white"
         android:textColor="@color/black"
@@ -132,30 +132,35 @@
         android:visibility="gone"
         android:fontFamily="@font/beachday"
         android:inputType="number"
+        android:layout_marginTop="24dp"
         app:layout_constraintTop_toBottomOf="@id/symbolButtons"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/restartGameIcon"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="8dp" />
+        app:layout_constraintEnd_toEndOf="parent" />
+
 
     <!-- Restart Icon -->
-    <TextView
-        android:id="@+id/restartGameIcon"
-        android:layout_width="78dp"
-        android:layout_height="48dp"
+
+
+    <!-- Answer Buttons -->
+
+    <Button
+        android:id="@+id/restartGameButton"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginBottom="72dp"
+        android:background="@drawable/rounded_button"
         android:drawableTop="@drawable/restart_game_icon"
+        android:drawablePadding="-2dp"
         android:fontFamily="@font/atop"
         android:gravity="center"
         android:text="Restart"
-        android:visibility="gone"
         android:textColor="@color/black"
         android:textSize="16dp"
-        app:layout_constraintTop_toTopOf="@id/mathExpressionBackground"
-        app:layout_constraintBottom_toBottomOf="@id/mathExpressionBackground"
-        app:layout_constraintStart_toEndOf="@id/mathExpressionBackground"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Answer Buttons -->
     <LinearLayout
         android:id="@+id/answerButtons"
         android:layout_width="wrap_content"
@@ -228,20 +233,24 @@
         </LinearLayout>
     </LinearLayout>
     <!-- Generate New Expression -->
+
     <Button
         android:id="@+id/newExpressionButton"
-        android:layout_width="259dp"
-        android:layout_height="51dp"
-        android:visibility="gone"
-        android:layout_marginBottom="64dp"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="72dp"
         android:background="@drawable/rounded_button"
+        android:drawableRight="@drawable/next_expression_arrow"
+        android:drawablePadding="-10dp"
         android:fontFamily="@font/atop"
-        android:text="Generate New Expression"
+        android:text="next"
         android:textColor="@color/black"
-        android:textSize="15dp"
+        android:textSize="19dp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.829"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/answerFeedbackText"

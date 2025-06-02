@@ -1,0 +1,50 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="24dp"
+    android:background="@color/yellow"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/dialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Are you sure you want to reset the game? You will lose your gained points!"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:fontFamily="@font/beachday"
+        android:layout_gravity="center"
+        android:textSize="20sp"
+        android:paddingBottom="20dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center">
+
+        <Button
+            android:id="@+id/noButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_green_dialog_buttons"
+            android:text="No"
+            android:textSize="20dp"
+            android:fontFamily="@font/beachday" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="0dp" />
+
+        <Button
+            android:id="@+id/yesButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/rounded_green_dialog_buttons"
+            android:text="Yes"
+            android:textSize="20dp"
+            android:fontFamily="@font/beachday" />
+    </LinearLayout>
+
+</LinearLayout>

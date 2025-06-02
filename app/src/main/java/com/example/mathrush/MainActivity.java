@@ -1,12 +1,12 @@
 package com.example.mathrush;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
-
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -39,12 +39,16 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        // Vi tar den senaste bästa streak och lägger det in i streak record textView:n på start sidan
-//        streakRecordNumberMainPage = findViewById(R.id.streakRecordNumberMainPage);
-//        String latestStreak = getIntent().getStringExtra("theStreak");
-//        if(latestStreak != null) {
-//            streakRecordNumberMainPage.setText(latestStreak);
-//        }
+        // Vi hämtar GUI TextViewn:n för att kunna sätta funktionalitet på den
+        streakRecordNumberMainPage = findViewById(R.id.streakRecordNumberMainPage);
+
+        // Vi hämtar det sparade rekordet från SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("MathRushPrefs", MODE_PRIVATE);
+        int savedStreak = prefs.getInt("StreakRecord", 0);
+        String stringSavedStreak = Integer.toString(savedStreak);
+
+        // Vi visar rekordet i TextView:n sist
+        streakRecordNumberMainPage.setText(stringSavedStreak);
 
 
     }

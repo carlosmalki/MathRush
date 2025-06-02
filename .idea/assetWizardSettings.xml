@@ -18,7 +18,7 @@
                                 <PersistentState>
                                   <option name="values">
                                     <map>
-                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialicons/restart_alt/baseline_restart_alt_24.xml" />
+                                      <entry key="url" value="file:/$USER_HOME$/AppData/Local/Android/Sdk/icons/material/materialiconsround/play_arrow/round_play_arrow_24.xml" />
                                     </map>
                                   </option>
                                 </PersistentState>
@@ -28,8 +28,7 @@
                         </option>
                         <option name="values">
                           <map>
-                            <entry key="color" value="ff0000" />
-                            <entry key="outputName" value="baseline_restart_alt_24" />
+                            <entry key="outputName" value="next_expression_arrow" />
                             <entry key="sourceFile" value="C:\Users\carlo\AndroidStudioProjects\MathRush" />
                           </map>
                         </option>
