@@ -1,7 +1,13 @@
 package com.example.mathrush;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.media.MediaPlayer;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,22 +15,20 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.TextView;
-import android.content.pm.PackageManager;
-import androidx.core.app.ActivityCompat;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.content.Context;
-import android.os.Build;
-import androidx.core.app.NotificationCompat;
-import android.media.MediaPlayer;
+
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+
+import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -42,12 +46,20 @@ public class GameActivity extends AppCompatActivity {
     private Random random;
 
     private int randomNumber1, randomNumber2;
-    private String sumText;
+    private String ExpressionResultsText;
     private Button[] answerButtonsArray;
     private int gamePoints;
 
     private MediaPlayer correctAnswerSound;
     private MediaPlayer wrongAnswerSound;
+
+    // Denna variabel finns för att kunna generera rätt uttryck för spelaren
+    private String selectedOperator;
+
+    // Denna boolean finns för att den symbol-knappen vi trycker på ska inte bara generera uttryck vid varje klick
+    private boolean hasGeneratedFirstExpression = false;
+
+
 
 
     @Override
@@ -70,7 +82,6 @@ public class GameActivity extends AppCompatActivity {
         }
 
         random = new Random();
-
         gameSiteTitle = findViewById(R.id.gameSiteTitle);
         additionButton = findViewById(R.id.additionButton);
         subtractionButton = findViewById(R.id.subtractionButton);
@@ -96,14 +107,13 @@ public class GameActivity extends AppCompatActivity {
         // Vi sätter värdet på streak-rekordet i TextView:n
         streakRecordNumber.setText(String.valueOf(savedStreak));
 
-
         correctAnswerSound = MediaPlayer.create(this, R.raw.correct_answer_sound);
         wrongAnswerSound = MediaPlayer.create(this, R.raw.wrong_answer_sound);
 
         answerButtonsArray = new Button[] {choiceOne, choiceTwo, choiceThree, choiceFour};
         symbolButtonsAnimation();
 
-        // När det trycks på "+"-knappen
+        // När det trycks på "plus"-knappen
         additionButton.setOnClickListener(v -> {
             additionButton.clearAnimation();
             subtractionButton.clearAnimation();
@@ -114,30 +124,176 @@ public class GameActivity extends AppCompatActivity {
             additionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges));
             mathExpressionBackground.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges));
             restartGameButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges));
+            gameSiteTitle.setText("Addition");
+            gameSiteTitle.setTextColor(Color.parseColor("#82b6ff"));
 
             // Här gör vi spel komponenterna synliga då spelaren har valt en symbol för att spela
             mathExpressionBackground.setVisibility(View.VISIBLE);
             restartGameButton.setVisibility(View.VISIBLE);
             setChoiceButtonsVisibility(View.VISIBLE);
-            gameSiteTitle.setVisibility(View.INVISIBLE);
 
             startChoiceButtonsAnimation();
 
-            // Vi tillåter inte knappen klickas mer än en gång efter första klicket
-           additionButton.setEnabled(false);
 
-            // Vi genererar sedan ett uttryck i spelet
-            generateAdditionExpression();
+            // Endast första gången vi trycker på knappen, generera uttrycket
+            if (!hasGeneratedFirstExpression) {
+                generateAdditionExpression();
+                hasGeneratedFirstExpression = true;
+            }
+
+            subtractionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+            multiplicationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+            divisionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+            subtractionButton.setVisibility(View.INVISIBLE);
+            multiplicationButton.setVisibility(View.INVISIBLE);
+            divisionButton.setVisibility(View.INVISIBLE);
+
+
+            // symbolen som spelaren har valt att spela med
+            selectedOperator = "+";
 
         });
 
+        // När det trycks på "minus"-knappen
+        subtractionButton.setOnClickListener(v -> {
+            additionButton.clearAnimation();
+            subtractionButton.clearAnimation();
+            multiplicationButton.clearAnimation();
+            divisionButton.clearAnimation();
 
-        newExpressionButton.setOnClickListener(v -> { // När vi trycker på "generate new expression" knappen
+            // Vi byter färg på knappen och tillhörande komponenter för att visa att spelaren har valt den symbolen för att spela
+            subtractionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges_pink));
+            mathExpressionBackground.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges_pink));
+            restartGameButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges_pink));
+            gameSiteTitle.setText("Subtraction");
+            gameSiteTitle.setTextColor(Color.parseColor("#ff5994"));
+
+
+            // Här gör vi spel komponenterna synliga då spelaren har valt en symbol för att spela
+            mathExpressionBackground.setVisibility(View.VISIBLE);
+            restartGameButton.setVisibility(View.VISIBLE);
+            setChoiceButtonsVisibility(View.VISIBLE);
+
+            startChoiceButtonsAnimation();
+
+            // Endast första gången vi trycker på knappen, generera uttrycket
+            if (!hasGeneratedFirstExpression) {
+                generateSubtractionExpression();
+                hasGeneratedFirstExpression = true;
+            }
+
+            additionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+            multiplicationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+            divisionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+            additionButton.setVisibility(View.INVISIBLE);
+            multiplicationButton.setVisibility(View.INVISIBLE);
+            divisionButton.setVisibility(View.INVISIBLE);
+
+            // symbolen som spelaren har valt att spela med
+            selectedOperator = "-";
+
+
+        });
+
+        // När det trycks på "gånger"-knappen
+        multiplicationButton.setOnClickListener(v -> {
+            additionButton.clearAnimation();
+            subtractionButton.clearAnimation();
+            multiplicationButton.clearAnimation();
+            divisionButton.clearAnimation();
+
+            // Vi byter färg på knappen och tillhörande komponenter för att visa att spelaren har valt den symbolen för att spela
+            multiplicationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges_orange));
+            mathExpressionBackground.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges_orange));
+            restartGameButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges_orange));
+            gameSiteTitle.setText("Multiplication");
+            gameSiteTitle.setTextColor(Color.parseColor("#ff9668"));
+
+            // Här gör vi spel komponenterna synliga då spelaren har valt en symbol för att spela
+            mathExpressionBackground.setVisibility(View.VISIBLE);
+            restartGameButton.setVisibility(View.VISIBLE);
+            setChoiceButtonsVisibility(View.VISIBLE);
+
+            startChoiceButtonsAnimation();
+
+            // Endast första gången vi trycker på knappen, generera uttrycket
+            if (!hasGeneratedFirstExpression) {
+                generateMultiplicationExpression();
+                hasGeneratedFirstExpression = true;
+            }
+
+            additionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+            subtractionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+            divisionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+            additionButton.setVisibility(View.INVISIBLE);
+            subtractionButton.setVisibility(View.INVISIBLE);
+            divisionButton.setVisibility(View.INVISIBLE);
+
+            // symbolen som spelaren har valt att spela med
+            selectedOperator = "*";
+
+
+        });
+
+        // När det trycks på "division"-knappen
+        divisionButton.setOnClickListener(v -> {
+            additionButton.clearAnimation();
+            subtractionButton.clearAnimation();
+            multiplicationButton.clearAnimation();
+            divisionButton.clearAnimation();
+
+            // Vi byter färg på knappen och tillhörande komponenter för att visa att spelaren har valt den symbolen för att spela
+            divisionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges_purple));
+            mathExpressionBackground.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges_purple));
+            restartGameButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges_purple));
+            gameSiteTitle.setText("Division");
+            gameSiteTitle.setTextColor(Color.parseColor("#c88cff"));
+
+            // Här gör vi spel komponenterna synliga då spelaren har valt en symbol för att spela
+            mathExpressionBackground.setVisibility(View.VISIBLE);
+            restartGameButton.setVisibility(View.VISIBLE);
+            setChoiceButtonsVisibility(View.VISIBLE);
+
+
+            startChoiceButtonsAnimation();
+
+            // Endast första gången vi trycker på knappen, generera uttrycket
+            if (!hasGeneratedFirstExpression) {
+                generateDivisionExpression();
+                hasGeneratedFirstExpression = true;
+            }
+
+            additionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+            subtractionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+            multiplicationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+            subtractionButton.setVisibility(View.INVISIBLE);
+            multiplicationButton.setVisibility(View.INVISIBLE);
+            additionButton.setVisibility(View.INVISIBLE);
+
+            // symbolen som spelaren har valt att spela med
+            selectedOperator = "/";
+
+
+        });
+
+        // När vi trycker på "generate new expression" knappen
+        newExpressionButton.setOnClickListener(v -> {
             startChoiceButtonsAnimation();
             newExpressionButton.setVisibility(View.INVISIBLE);
             answerFeedbackText.setVisibility(View.INVISIBLE);
             answerFeedbackText.setText("");
-            generateAdditionExpression();
+
+            // Vi genererar rätt typ av uttryck baserat på symbolen som spelaren har valt att spela med
+            if (selectedOperator == "+") {
+                generateAdditionExpression();
+            } else if (selectedOperator == "-") {
+                generateSubtractionExpression();
+            } else if (selectedOperator == "*") {
+                generateMultiplicationExpression();
+            } else if (selectedOperator == "/") {
+                generateDivisionExpression();
+            }
+
             newExpressionButton.clearAnimation();
             makingChoiceButtonsClickable();
         });
@@ -184,7 +340,7 @@ public class GameActivity extends AppCompatActivity {
         // Vi omvandlar till strängar för att kunna lägga in de i våra TextView:s
         String randomNumber1Text = Integer.toString(randomNumber1);
         String randomNumber2Text = Integer.toString(randomNumber2);
-        sumText = Integer.toString(sum);
+        ExpressionResultsText = Integer.toString(sum);
 
         // vi sätter in texten
         mathExpressionBackground.setText(randomNumber1Text+" + "+randomNumber2Text);
@@ -192,7 +348,7 @@ public class GameActivity extends AppCompatActivity {
         int randomChoiceButtonIndex = random.nextInt(answerButtonsArray.length);
 
         // Vi sätter svaret i den slumpmässiga knappen
-        answerButtonsArray[randomChoiceButtonIndex].setText(sumText);
+        answerButtonsArray[randomChoiceButtonIndex].setText(ExpressionResultsText);
 
         // Vi fyller de resterande knapparna med fel svars alternativ
         for (int i = 0; i < answerButtonsArray.length; i++) {
@@ -212,10 +368,126 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
+    // Denna metod är för att generera subtraktion uttryck för spelet
+    public void generateSubtractionExpression() {
+
+        // Vi genererar två slumpmässiga siffror mellan 1-100 inklusive 1 och 100 för spelandet
+        randomNumber1 = random.nextInt(100) + 1;
+        randomNumber2 = random.nextInt(100) + 1;
+
+        // Svaret i (Integer)
+        int resultsNumber = randomNumber1 - randomNumber2;
+
+        // Vi omvandlar till strängar för att kunna lägga in de i våra TextView:s
+        String randomNumber1Text = Integer.toString(randomNumber1);
+        String randomNumber2Text = Integer.toString(randomNumber2);
+        ExpressionResultsText = Integer.toString(resultsNumber);
+
+        // vi sätter in texten
+        mathExpressionBackground.setText(randomNumber1Text+" - "+randomNumber2Text);
+
+        int randomChoiceButtonIndex = random.nextInt(answerButtonsArray.length);
+
+        // Vi sätter svaret i den slumpmässiga knappen
+        answerButtonsArray[randomChoiceButtonIndex].setText(ExpressionResultsText);
+
+        // Vi fyller de resterande knapparna med fel svars alternativ
+        for (int i = 0; i < answerButtonsArray.length; i++) {
+            if(i == randomChoiceButtonIndex) continue;
+
+            int wrongAnswer;
+            do {
+                wrongAnswer =  + random.nextInt(31) -10;
+            } while(wrongAnswer == resultsNumber || wrongAnswer < 1);
+
+            // Vi omvandlar de fel svaren till strings och sätter de i knapparna
+            String wrongAnswerText = Integer.toString(wrongAnswer);
+            answerButtonsArray[i].setText(wrongAnswerText);
+
+            resetChoiceButtonColor();
+        }
+
+    }
+
+    // Denna metod är för att generera multiplikation uttryck för spelet
+    public void generateMultiplicationExpression() {
+
+        // Vi genererar två slumpmässiga siffror mellan 1-10 inklusive 1 och 10 för spelandet
+        randomNumber1 = random.nextInt(10) + 1;
+        randomNumber2 = random.nextInt(10) + 1;
+
+        // Svaret i (Integer)
+        int resultsNumber = randomNumber1 * randomNumber2;
+
+        // Vi omvandlar till strängar för att kunna lägga in de i våra TextView:s
+        String randomNumber1Text = Integer.toString(randomNumber1);
+        String randomNumber2Text = Integer.toString(randomNumber2);
+        ExpressionResultsText = Integer.toString(resultsNumber);
+
+        // vi sätter in texten
+        mathExpressionBackground.setText(randomNumber1Text+" x "+randomNumber2Text);
+
+        int randomChoiceButtonIndex = random.nextInt(answerButtonsArray.length);
+
+        // Vi sätter svaret i den slumpmässiga knappen
+        answerButtonsArray[randomChoiceButtonIndex].setText(ExpressionResultsText);
+
+        // Vi fyller de resterande knapparna med fel svars alternativ
+        for (int i = 0; i < answerButtonsArray.length; i++) {
+            if(i == randomChoiceButtonIndex) continue;
+
+            int wrongAnswer;
+            do {
+                wrongAnswer =  + random.nextInt(21) - 3;
+            } while(wrongAnswer == resultsNumber || wrongAnswer < 1);
+
+            // Vi omvandlar de fel svaren till strings och sätter de i knapparna
+            String wrongAnswerText = Integer.toString(wrongAnswer);
+            answerButtonsArray[i].setText(wrongAnswerText);
+
+            resetChoiceButtonColor();
+        }
+
+    }
+
+    public void generateDivisionExpression() {
+        // Vi vill säkerställa att divisionen går jämnt ut
+        randomNumber2 = random.nextInt(9) + 1; // 1 till 9
+        int quotient = random.nextInt(10) + 1; // svaret, 1 till 10
+        randomNumber1 = randomNumber2 * quotient; // säkerställer att divisionen blir ett heltal
+
+        // Omvandlar till strängar
+        String randomNumber1Text = Integer.toString(randomNumber1);
+        String randomNumber2Text = Integer.toString(randomNumber2);
+        ExpressionResultsText = Integer.toString(quotient);
+
+        // Vi sätter uttrycket i textvyn
+        mathExpressionBackground.setText(randomNumber1Text + " / " + randomNumber2Text);
+
+        // Väljer en slumpmässig knapp för rätt svar
+        int randomChoiceButtonIndex = random.nextInt(answerButtonsArray.length);
+        answerButtonsArray[randomChoiceButtonIndex].setText(ExpressionResultsText);
+
+        // Fyller övriga knappar med felaktiga, men rimliga svar
+        for (int i = 0; i < answerButtonsArray.length; i++) {
+            if (i == randomChoiceButtonIndex) continue;
+
+            int wrongAnswer;
+            do {
+                wrongAnswer = quotient + random.nextInt(11) - 5; // plus minus 5 från det rätta svaret
+            } while (wrongAnswer == quotient || wrongAnswer < 1);
+
+            answerButtonsArray[i].setText(Integer.toString(wrongAnswer));
+        }
+
+        resetChoiceButtonColor();
+    }
+
+
     // Metod som hanterar rätt samt fel svar
     public void showCorrectAnswer(Button choicebutton) {
 
-        int integerSum = Integer.parseInt(sumText);
+        int integerSum = Integer.parseInt(ExpressionResultsText);
         String sumTextOnButton = (String) choicebutton.getText();
         int integerSumOnButton = Integer.parseInt(sumTextOnButton);
         Animation pulse = AnimationUtils.loadAnimation(this, R.anim.pulse);
@@ -251,7 +523,7 @@ public class GameActivity extends AppCompatActivity {
 
             // Vi färgar knappen med rätt svar grönt för att visa spelaren det rätta svaret.
             for (Button btn : answerButtonsArray) {
-                if (btn.getText().toString().equals(sumText)) {
+                if (btn.getText().toString().equals(ExpressionResultsText)) {
                     btn.setBackground(ContextCompat.getDrawable(this, R.drawable.correct_answer_color));
                     btn.setAnimation(pulse);
                     break;
@@ -268,6 +540,14 @@ public class GameActivity extends AppCompatActivity {
         choiceTwo.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
         choiceThree.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
         choiceFour.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+    }
+
+    // Denna metod anropas när vi vill förändra designen på våra symbol knappar till default design
+    public void resetSymbolButtonColor() {
+        additionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+        subtractionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+        multiplicationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+        divisionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
     }
 
     // Denna metod tar bort animationen (puls) från våra val knappar
@@ -374,8 +654,8 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    // Metoden som visar en dialog när spelaren har samlade spelpoäng och väljer att reseta spelet
-    private void showConfirmationDialog() {
+    // Metoden som visar en egen designad dialog när spelaren har samlade spelpoäng och väljer att reseta spelet
+    public void showConfirmationDialog() {
         LayoutInflater inflater = LayoutInflater.from(this);
         View dialogView = inflater.inflate(R.layout.custom_confirmation_dialog, null);
 
@@ -386,7 +666,7 @@ public class GameActivity extends AppCompatActivity {
         // Dialogen byggs
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setView(dialogView)
-                .setCancelable(false) // om du inte vill att den stängs utanför
+                .setCancelable(false)
                 .create();
 
         // Klick på "Yes" knappen
@@ -401,18 +681,26 @@ public class GameActivity extends AppCompatActivity {
 
         // Klick på "No" knappen
         noButton.setOnClickListener(v -> {
-            dialog.dismiss(); // Detta händer när det klickas på "No" knappen (Dialogen stängs)
+            dialog.dismiss();
         });
         dialog.show();
     }
 
 
+    // Denna metod anropas när spelaren trycker på "restart" knappen för att starta om spelet
     public void resetGame() {
+
+        // Nollställer så att man kan generera igen ett uttryck
+        hasGeneratedFirstExpression = false;
+
         // Vi tar bort pulsen som finns på val knapparna
         removeChoiceButtonAnimation();
 
-        // Vi nollställer tillbaka färgen och kanterna på symbolknappen
-        additionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+        resetSymbolButtonColor();
+        gameSiteTitle.setText("CHOOSE A SYMBOL TO PLAY");
+        gameSiteTitle.setTextColor(Color.parseColor("#FF000000"));
+        // Vi visar titeln som säger att man ska välja symbol för att spela
+        gameSiteTitle.setVisibility(View.VISIBLE);
 
         updateStreakIfNeeded();
 
@@ -428,21 +716,16 @@ public class GameActivity extends AppCompatActivity {
         answerFeedbackText.setText("");
         newExpressionButton.clearAnimation();
 
+        setSymbolButtonVisibility(View.VISIBLE);
         resetChoiceButtonColor();
-        generateAdditionExpression();
         makingChoiceButtonsClickable();
 
         // Vi nollställer de samlade poängen under spelandet
         resetGamePoints();
-
-        // Vi visar titeln som säger att man ska välja symbol för att spela
-        gameSiteTitle.setVisibility(View.VISIBLE);
-
-        // Vi måste kunna trycka på knappen igen då vi restartar spelet.
-        additionButton.setEnabled(true);
     }
 
-    private void showNewStreakNotification(int newStreak) {
+    // Metoden som visar en notifikation varje gång spelaren når ett nytt rekord
+    public void showNewStreakNotification(int newStreak) {
         NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
         // VI skapar kanalen
@@ -469,12 +752,19 @@ public class GameActivity extends AppCompatActivity {
 
 
     // Metoden som sätter synligheten av våra val knappar
-    private void setChoiceButtonsVisibility(int visibility) {
+    public void setChoiceButtonsVisibility(int visibility) {
         choiceOne.setVisibility(visibility);
         choiceTwo.setVisibility(visibility);
         choiceThree.setVisibility(visibility);
         choiceFour.setVisibility(visibility);
     }
 
+    // Metoden som sätter synligheten på våra symbol knappar
+    public void setSymbolButtonVisibility(int visibility) {
+        additionButton.setVisibility(visibility);
+        subtractionButton.setVisibility(visibility);
+        multiplicationButton.setVisibility(visibility);
+        divisionButton.setVisibility(visibility);
+    }
 
 }
