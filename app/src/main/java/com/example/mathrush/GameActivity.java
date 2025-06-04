@@ -6,14 +6,19 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -26,9 +31,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import java.util.HashSet;
 import java.util.Random;
-import java.util.Set;
+
 
 public class GameActivity extends AppCompatActivity {
 
@@ -45,6 +49,12 @@ public class GameActivity extends AppCompatActivity {
     private TextView gameSiteTitle, mathExpressionBackground, answerFeedbackText, pointsNumber, streakRecordNumber;
     private Random random;
 
+    private ProgressBar timerBar;
+
+    private CountDownTimer timer;
+
+    // 15 sekunder timer för spelaren att svara
+    private final int questionTimeLimit = 5000;
     private int randomNumber1, randomNumber2;
     private String ExpressionResultsText;
     private Button[] answerButtonsArray;
@@ -58,6 +68,8 @@ public class GameActivity extends AppCompatActivity {
 
     // Denna boolean finns för att den symbol-knappen vi trycker på ska inte bara generera uttryck vid varje klick
     private boolean hasGeneratedFirstExpression = false;
+
+
 
 
 
@@ -97,6 +109,8 @@ public class GameActivity extends AppCompatActivity {
         pointsNumber = findViewById(R.id.pointsNumber);
         newExpressionButton = findViewById(R.id.newExpressionButton);
         answerFeedbackText = findViewById(R.id.answerFeedbackText);
+        timerBar = findViewById(R.id.timeBar);
+
 
         // Vi hämtar referens till SharedPreferences med vårt filnamn
         SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
@@ -126,11 +140,14 @@ public class GameActivity extends AppCompatActivity {
             restartGameButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges));
             gameSiteTitle.setText("Addition");
             gameSiteTitle.setTextColor(Color.parseColor("#82b6ff"));
+            Drawable customDrawable = ContextCompat.getDrawable(this, R.drawable.progress_bar_color_blue);
+            timerBar.setProgressDrawable(customDrawable);
 
             // Här gör vi spel komponenterna synliga då spelaren har valt en symbol för att spela
             mathExpressionBackground.setVisibility(View.VISIBLE);
             restartGameButton.setVisibility(View.VISIBLE);
             setChoiceButtonsVisibility(View.VISIBLE);
+            timerBar.setVisibility(View.VISIBLE);
 
             startChoiceButtonsAnimation();
 
@@ -152,6 +169,14 @@ public class GameActivity extends AppCompatActivity {
             // symbolen som spelaren har valt att spela med
             selectedOperator = "+";
 
+            // Stoppa och rensa eventuell pågående timer och starta en ny som är på 15 sekunder
+            if (timer != null) {
+                timer.cancel();
+                timer = null;
+            }
+            startQuestionTimer();
+
+
         });
 
         // När det trycks på "minus"-knappen
@@ -167,12 +192,15 @@ public class GameActivity extends AppCompatActivity {
             restartGameButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges_pink));
             gameSiteTitle.setText("Subtraction");
             gameSiteTitle.setTextColor(Color.parseColor("#ff5994"));
+            Drawable customDrawable = ContextCompat.getDrawable(this, R.drawable.progress_bar_color_pink);
+            timerBar.setProgressDrawable(customDrawable);
 
 
             // Här gör vi spel komponenterna synliga då spelaren har valt en symbol för att spela
             mathExpressionBackground.setVisibility(View.VISIBLE);
             restartGameButton.setVisibility(View.VISIBLE);
             setChoiceButtonsVisibility(View.VISIBLE);
+            timerBar.setVisibility(View.VISIBLE);
 
             startChoiceButtonsAnimation();
 
@@ -192,6 +220,13 @@ public class GameActivity extends AppCompatActivity {
             // symbolen som spelaren har valt att spela med
             selectedOperator = "-";
 
+            // Stoppa och rensa eventuell pågående timer och starta en ny som är på 15 sekunder
+            if (timer != null) {
+                timer.cancel();
+                timer = null;
+            }
+            startQuestionTimer();
+
 
         });
 
@@ -208,11 +243,14 @@ public class GameActivity extends AppCompatActivity {
             restartGameButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges_orange));
             gameSiteTitle.setText("Multiplication");
             gameSiteTitle.setTextColor(Color.parseColor("#ff9668"));
+            Drawable customDrawable = ContextCompat.getDrawable(this, R.drawable.progress_bar_color_orange);
+            timerBar.setProgressDrawable(customDrawable);
 
             // Här gör vi spel komponenterna synliga då spelaren har valt en symbol för att spela
             mathExpressionBackground.setVisibility(View.VISIBLE);
             restartGameButton.setVisibility(View.VISIBLE);
             setChoiceButtonsVisibility(View.VISIBLE);
+            timerBar.setVisibility(View.VISIBLE);
 
             startChoiceButtonsAnimation();
 
@@ -232,6 +270,13 @@ public class GameActivity extends AppCompatActivity {
             // symbolen som spelaren har valt att spela med
             selectedOperator = "*";
 
+            // Stoppa och rensa eventuell pågående timer och starta en ny som är på 15 sekunder
+            if (timer != null) {
+                timer.cancel();
+                timer = null;
+            }
+            startQuestionTimer();
+
 
         });
 
@@ -248,11 +293,14 @@ public class GameActivity extends AppCompatActivity {
             restartGameButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_edges_purple));
             gameSiteTitle.setText("Division");
             gameSiteTitle.setTextColor(Color.parseColor("#c88cff"));
+            Drawable customDrawable = ContextCompat.getDrawable(this, R.drawable.progress_bar_color_purple);
+            timerBar.setProgressDrawable(customDrawable);
 
             // Här gör vi spel komponenterna synliga då spelaren har valt en symbol för att spela
             mathExpressionBackground.setVisibility(View.VISIBLE);
             restartGameButton.setVisibility(View.VISIBLE);
             setChoiceButtonsVisibility(View.VISIBLE);
+            timerBar.setVisibility(View.VISIBLE);
 
 
             startChoiceButtonsAnimation();
@@ -272,6 +320,14 @@ public class GameActivity extends AppCompatActivity {
 
             // symbolen som spelaren har valt att spela med
             selectedOperator = "/";
+
+            // Stoppa och rensa eventuell pågående timer och starta en ny som är på 15 sekunder
+            if (timer != null) {
+                timer.cancel();
+                timer = null;
+            }
+            startQuestionTimer();
+
 
 
         });
@@ -296,6 +352,13 @@ public class GameActivity extends AppCompatActivity {
 
             newExpressionButton.clearAnimation();
             makingChoiceButtonsClickable();
+
+            // Stoppa och rensa eventuell pågående timer och starta en ny som är på 15 sekunder
+            if (timer != null) {
+                timer.cancel();
+                timer = null;
+            }
+            startQuestionTimer();
         });
 
         // Vi startar om allt förutom spelarens "streak" när det trycks på restart knappen
@@ -366,6 +429,7 @@ public class GameActivity extends AppCompatActivity {
             resetChoiceButtonColor();
         }
 
+
     }
 
     // Denna metod är för att generera subtraktion uttryck för spelet
@@ -406,6 +470,7 @@ public class GameActivity extends AppCompatActivity {
 
             resetChoiceButtonColor();
         }
+
 
     }
 
@@ -448,6 +513,8 @@ public class GameActivity extends AppCompatActivity {
             resetChoiceButtonColor();
         }
 
+
+
     }
 
     public void generateDivisionExpression() {
@@ -481,6 +548,7 @@ public class GameActivity extends AppCompatActivity {
         }
 
         resetChoiceButtonColor();
+
     }
 
 
@@ -500,11 +568,28 @@ public class GameActivity extends AppCompatActivity {
             choicebutton.setBackground(ContextCompat.getDrawable(this, R.drawable.correct_answer_color));
             answerFeedbackText.setTextColor(Color.parseColor("#0E8A07"));
             answerFeedbackText.setText("Correct!");
+
+            // Vi sätter denna stil på knappen alltid när spelaren svarar rätt
+            newExpressionButton.setText("next");
+            Drawable rightArrow = ContextCompat.getDrawable(this, R.drawable.next_expression_arrow);
+            newExpressionButton.setCompoundDrawablesWithIntrinsicBounds(null, null, rightArrow, null);
+            ViewGroup.LayoutParams params = newExpressionButton.getLayoutParams();
+            params.width = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
+            newExpressionButton.setLayoutParams(params);
+
+
             answerFeedbackText.setVisibility(View.VISIBLE);
             removeChoiceButtonAnimation();
             givePoint();
             newExpressionButton.setVisibility(View.VISIBLE);
             newExpressionButton.startAnimation(pulse);
+
+            // Stoppa och rensa eventuell pågående timer
+            if (timer != null) {
+                timer.cancel();
+                timer = null;
+            }
 
         }
 
@@ -518,8 +603,22 @@ public class GameActivity extends AppCompatActivity {
             answerFeedbackText.setVisibility(View.VISIBLE);
             removeChoiceButtonAnimation();
             resetGamePoints();
+
+            // Vi ändrar knappens egenskaper/design vid fel
+            newExpressionButton.setText("Try again");
+            newExpressionButton.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+            ViewGroup.LayoutParams params = newExpressionButton.getLayoutParams();
+            params.width = (int) TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, 120, getResources().getDisplayMetrics());
+            newExpressionButton.setLayoutParams(params);
+
             newExpressionButton.setVisibility(View.VISIBLE);
             newExpressionButton.startAnimation(pulse);
+            // Stoppa och rensa eventuell pågående timer
+            if (timer != null) {
+                timer.cancel();
+                timer = null;
+            }
 
             // Vi färgar knappen med rätt svar grönt för att visa spelaren det rätta svaret.
             for (Button btn : answerButtonsArray) {
@@ -609,8 +708,17 @@ public class GameActivity extends AppCompatActivity {
     // Denna metod nollställer de samlade poängen under spelandet
     public void resetGamePoints() {
         updateStreakIfNeeded(); // Kolla om spelaren har fått ett nytt rekord och uppdatera om det behövs
-        gamePoints = 0;
-        pointsNumber.setText("0");
+        if (gamePoints > 0) {
+            gamePoints = 0;
+            pointsNumber.setText("0");
+            // Vi låter poäng siffran hoppa upp endast om man hade samlade poäng för att visa att poängen är 0 igen
+            Animation jump = AnimationUtils.loadAnimation(this, R.anim.point_jump);
+            pointsNumber.startAnimation(jump);
+        } else {
+            gamePoints = 0;
+            pointsNumber.setText("0");
+        }
+
     }
 
 
@@ -713,6 +821,7 @@ public class GameActivity extends AppCompatActivity {
         setChoiceButtonsVisibility(View.INVISIBLE);
         newExpressionButton.setVisibility(View.INVISIBLE);
         answerFeedbackText.setVisibility(View.INVISIBLE);
+        timerBar.setVisibility(View.INVISIBLE);
         answerFeedbackText.setText("");
         newExpressionButton.clearAnimation();
 
@@ -722,6 +831,12 @@ public class GameActivity extends AppCompatActivity {
 
         // Vi nollställer de samlade poängen under spelandet
         resetGamePoints();
+        // Stoppa och rensa eventuell pågående timer
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+
     }
 
     // Metoden som visar en notifikation varje gång spelaren når ett nytt rekord
@@ -767,4 +882,75 @@ public class GameActivity extends AppCompatActivity {
         divisionButton.setVisibility(visibility);
     }
 
+    // Metod som startar en timer som tvingar spelaren att spela/svara snabbt
+    private void startQuestionTimer() {
+        // Om tidigare timer körs stoppar vi den
+        if (timer != null) timer.cancel();
+
+        // Starta från 100%
+        timerBar.setProgress(100);
+
+        timer = new CountDownTimer(questionTimeLimit, 100) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                // Räkna ner från 100 till 0 (progressbar töms)
+                int progress = (int) (millisUntilFinished * 100 / questionTimeLimit);
+                timerBar.setProgress(progress);
+            }
+
+            @Override
+            public void onFinish() {
+                timerBar.setProgress(0);
+                handleTimeOut(choiceOne);
+                handleTimeOut(choiceTwo);
+                handleTimeOut(choiceThree);
+                handleTimeOut(choiceFour);
+            }
+        };
+
+        timer.start();
+    }
+
+
+    // Metoden som anrops och gör saker när tiden är slut utan svar
+    public void handleTimeOut(Button choicebutton) {
+
+        Animation pulse = AnimationUtils.loadAnimation(this, R.anim.pulse);
+
+            wrongAnswerSound.seekTo(0);
+            wrongAnswerSound.start();
+            makingChoiceButtonsUnclickable();
+            choicebutton.setBackground(ContextCompat.getDrawable(this, R.drawable.wrong_answer_color));
+            answerFeedbackText.setTextColor(Color.parseColor("#9E1010"));
+            answerFeedbackText.setText("Time is out!");
+            answerFeedbackText.setVisibility(View.VISIBLE);
+            removeChoiceButtonAnimation();
+            resetGamePoints();
+            newExpressionButton.setVisibility(View.VISIBLE);
+            newExpressionButton.startAnimation(pulse);
+
+            // Vi ändrar knappens egenskaper/design vid fel
+            newExpressionButton.setText("Try again");
+            newExpressionButton.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null);
+            ViewGroup.LayoutParams params = newExpressionButton.getLayoutParams();
+            params.width = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 120, getResources().getDisplayMetrics());
+            newExpressionButton.setLayoutParams(params);
+
+
+            // Vi färgar knappen med rätt svar grönt för att visa spelaren det rätta svaret.
+            for (Button btn : answerButtonsArray) {
+                if (btn.getText().toString().equals(ExpressionResultsText)) {
+                    btn.setBackground(ContextCompat.getDrawable(this, R.drawable.correct_answer_color));
+                    btn.setAnimation(pulse);
+                    break;
+                }
+            }
+
+        }
+
 }
+
+
+
+

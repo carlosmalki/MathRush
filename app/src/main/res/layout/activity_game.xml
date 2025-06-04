@@ -62,7 +62,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Symbol Buttons -->
+    <ProgressBar
+        android:id="@+id/timeBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="288dp"
+        android:layout_height="16dp"
+        android:visibility="gone"
+        android:max="100"
+        android:progress="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/symbolButtons" />
+
+
     <LinearLayout
         android:id="@+id/symbolButtons"
         android:layout_width="wrap_content"
@@ -119,7 +131,6 @@
             android:layout_margin="8dp" />
     </LinearLayout>
 
-    <!-- Math Expression -->
     <TextView
         android:id="@+id/mathExpressionBackground"
         android:layout_width="304dp"
@@ -137,11 +148,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-
-    <!-- Restart Icon -->
-
-
-    <!-- Answer Buttons -->
 
     <Button
         android:id="@+id/restartGameButton"

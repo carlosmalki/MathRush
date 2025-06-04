@@ -1,0 +1,22 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Bakgrund (syns när det gula försvinner) -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <solid android:color="#CCCCCC" />
+            <corners android:radius="20dp" />
+        </shape>
+
+    </item>
+
+    <!-- Fyllning (lila delen) -->
+    <item android:id="@android:id/progress">
+        <clip android:clipOrientation="horizontal" android:gravity="left">
+            <shape android:shape="rectangle">
+                <solid android:color="@color/purple" />
+                <corners android:radius="20dp" />
+            </shape>
+        </clip>
+    </item>
+
+</layer-list>
