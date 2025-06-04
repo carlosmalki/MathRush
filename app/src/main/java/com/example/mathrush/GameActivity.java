@@ -855,6 +855,15 @@ public class GameActivity extends AppCompatActivity {
             timer = null;
         }
 
+        // Vi stoppar tick-ljudet
+        if (timeSound != null) {
+            timeSound.stop();
+            timeSound.release();
+            timeSound = null;
+        }
+        timerBar.clearAnimation();
+
+
     }
 
     // Metoden som visar en notifikation varje gång spelaren når ett nytt rekord
