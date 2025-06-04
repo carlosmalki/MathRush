@@ -15,8 +15,10 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.ScaleAnimation;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -54,14 +56,13 @@ public class GameActivity extends AppCompatActivity {
     private CountDownTimer timer;
 
     // 15 sekunder timer för spelaren att svara
-    private final int questionTimeLimit = 5000;
+    private final int questionTimeLimit = 10000;
     private int randomNumber1, randomNumber2;
     private String ExpressionResultsText;
     private Button[] answerButtonsArray;
     private int gamePoints;
 
-    private MediaPlayer correctAnswerSound;
-    private MediaPlayer wrongAnswerSound;
+    private MediaPlayer correctAnswerSound,wrongAnswerSound, timeSound;
 
     // Denna variabel finns för att kunna generera rätt uttryck för spelaren
     private String selectedOperator;
@@ -123,6 +124,7 @@ public class GameActivity extends AppCompatActivity {
 
         correctAnswerSound = MediaPlayer.create(this, R.raw.correct_answer_sound);
         wrongAnswerSound = MediaPlayer.create(this, R.raw.wrong_answer_sound);
+        timeSound = MediaPlayer.create(this, R.raw.ticking_sound);
 
         answerButtonsArray = new Button[] {choiceOne, choiceTwo, choiceThree, choiceFour};
         symbolButtonsAnimation();
@@ -349,7 +351,7 @@ public class GameActivity extends AppCompatActivity {
             } else if (selectedOperator == "/") {
                 generateDivisionExpression();
             }
-
+            
             newExpressionButton.clearAnimation();
             makingChoiceButtonsClickable();
 
@@ -584,6 +586,14 @@ public class GameActivity extends AppCompatActivity {
             givePoint();
             newExpressionButton.setVisibility(View.VISIBLE);
             newExpressionButton.startAnimation(pulse);
+            timerBar.clearAnimation();
+
+            // Vi stoppar tick-ljudet
+            if (timeSound != null) {
+                timeSound.stop();
+                timeSound.release();
+                timeSound = null;
+            }
 
             // Stoppa och rensa eventuell pågående timer
             if (timer != null) {
@@ -614,6 +624,14 @@ public class GameActivity extends AppCompatActivity {
 
             newExpressionButton.setVisibility(View.VISIBLE);
             newExpressionButton.startAnimation(pulse);
+
+            // Vi stoppar tick-ljudet
+            if (timeSound != null) {
+                timeSound.stop();
+                timeSound.release();
+                timeSound = null;
+            }
+            timerBar.clearAnimation();
             // Stoppa och rensa eventuell pågående timer
             if (timer != null) {
                 timer.cancel();
@@ -882,6 +900,27 @@ public class GameActivity extends AppCompatActivity {
         divisionButton.setVisibility(visibility);
     }
 
+    // Metod som skapar puls animation på vår time bar de sista 5 sekunderna av tiden
+    private void startTimeBarPulseAnimation() {
+        ScaleAnimation pulse = new ScaleAnimation(
+                1.0f, 1.15f, // Scale X: från 100% till 115%
+                1.0f, 1.15f, // Scale Y: från 100% till 115%
+                Animation.RELATIVE_TO_SELF, 0.5f,
+                Animation.RELATIVE_TO_SELF, 0.5f
+        );
+        pulse.setDuration(500);
+        pulse.setRepeatMode(Animation.REVERSE);
+        pulse.setRepeatCount(Animation.INFINITE);
+        pulse.setInterpolator(new AccelerateDecelerateInterpolator());
+
+        if (timeSound == null) {
+            timeSound = MediaPlayer.create(this, R.raw.ticking_sound);
+        }
+        timeSound.seekTo(0);
+        timeSound.start();
+        timerBar.startAnimation(pulse);
+    }
+
     // Metod som startar en timer som tvingar spelaren att spela/svara snabbt
     private void startQuestionTimer() {
         // Om tidigare timer körs stoppar vi den
@@ -896,10 +935,16 @@ public class GameActivity extends AppCompatActivity {
                 // Räkna ner från 100 till 0 (progressbar töms)
                 int progress = (int) (millisUntilFinished * 100 / questionTimeLimit);
                 timerBar.setProgress(progress);
+
+                // Vi låter vår timerBar pulcera de sista 5 sekunderna
+                if (millisUntilFinished <= 5000 && timerBar.getAnimation() == null) {
+                    startTimeBarPulseAnimation();
+                }
             }
 
             @Override
             public void onFinish() {
+                timerBar.clearAnimation();
                 timerBar.setProgress(0);
                 handleTimeOut(choiceOne);
                 handleTimeOut(choiceTwo);
@@ -907,7 +952,6 @@ public class GameActivity extends AppCompatActivity {
                 handleTimeOut(choiceFour);
             }
         };
-
         timer.start();
     }
 
