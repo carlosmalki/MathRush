@@ -72,9 +72,6 @@ public class GameActivity extends AppCompatActivity {
 
 
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -518,7 +515,7 @@ public class GameActivity extends AppCompatActivity {
 
 
     }
-
+    // Denna metod är för att generera division uttryck för spelet
     public void generateDivisionExpression() {
         // Vi vill säkerställa att divisionen går jämnt ut
         randomNumber2 = random.nextInt(9) + 1; // 1 till 9
@@ -909,7 +906,7 @@ public class GameActivity extends AppCompatActivity {
         divisionButton.setVisibility(visibility);
     }
 
-    // Metod som skapar puls animation på vår time bar de sista 5 sekunderna av tiden
+    // Metod som skapar puls animation på vår time bar de sista 5 sekunderna av tiden och som spelar tickande ljud i samband med det
     private void startTimeBarPulseAnimation() {
         ScaleAnimation pulse = new ScaleAnimation(
                 1.0f, 1.15f, // Scale X: från 100% till 115%
