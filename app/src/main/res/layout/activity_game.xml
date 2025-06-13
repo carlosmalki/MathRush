@@ -9,6 +9,14 @@
     android:background="#84ff9f"
     tools:context=".GameActivity">
 
+    <!-- Guideline to position content after symbol buttons -->
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/topContentGuide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="250dp" />
+
     <!-- Points Icon -->
     <TextView
         android:id="@+id/pointsNumber"
@@ -62,75 +70,85 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-    <ProgressBar
-        android:id="@+id/timeBar"
-        style="?android:attr/progressBarStyleHorizontal"
-        android:layout_width="288dp"
-        android:layout_height="16dp"
-        android:visibility="gone"
-        android:max="100"
-        android:progress="0"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/symbolButtons" />
-
-
+    <!-- Symbol Buttons -->
     <LinearLayout
         android:id="@+id/symbolButtons"
-        android:layout_width="wrap_content"
+        android:layout_width="400dp"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:gravity="center"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="22dp"
         app:layout_constraintTop_toBottomOf="@id/gameSiteTitle"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <Button
-            android:id="@+id/additionButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:text="+"
-            android:textColor="@color/black"
-            android:textSize="40sp"
-            android:fontFamily="@font/atop"
-            android:background="@drawable/rounded_button"
-            android:layout_margin="8dp" />
+        <LinearLayout
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-        <Button
-            android:id="@+id/subtractionButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:text="-"
-            android:textColor="@color/black"
-            android:textSize="40sp"
-            android:fontFamily="@font/atop"
-            android:background="@drawable/rounded_button"
-            android:layout_margin="8dp" />
 
-        <Button
-            android:id="@+id/multiplicationButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:text="*"
-            android:textColor="@color/black"
-            android:textSize="40sp"
-            android:fontFamily="@font/atop"
-            android:background="@drawable/rounded_button"
-            android:layout_margin="8dp" />
+            <Button
+                android:id="@+id/additionButton"
+                android:layout_width="280dp"
+                android:layout_height="135dp"
+                android:layout_margin="8dp"
+                android:layout_gravity="center"
+                android:visibility="visible"
+                android:background="@drawable/rounded_button"
+                android:fontFamily="@font/atop"
+                android:text="+"
+                android:textColor="@color/black"
+                android:textSize="70sp" />
 
-        <Button
-            android:id="@+id/divisionButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:text="÷"
-            android:textColor="@color/black"
-            android:textSize="40sp"
-            android:fontFamily="@font/atop"
-            android:background="@drawable/rounded_button"
-            android:layout_margin="8dp" />
+            <Button
+                android:id="@+id/subtractionButton"
+                android:layout_width="280dp"
+                android:layout_height="135dp"
+                android:layout_margin="8dp"
+                android:visibility="visible"
+                android:layout_gravity="center"
+                android:background="@drawable/rounded_button"
+                android:fontFamily="@font/atop"
+                android:text="-"
+                android:textColor="@color/black"
+                android:textSize="70sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="400dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/multiplicationButton"
+                android:layout_width="280dp"
+                android:layout_height="135dp"
+                android:layout_margin="8dp"
+                android:visibility="visible"
+                android:background="@drawable/rounded_button"
+                android:fontFamily="@font/atop"
+                android:layout_gravity="center"
+                android:text="*"
+                android:textColor="@color/black"
+                android:textSize="70sp" />
+
+            <Button
+                android:id="@+id/divisionButton"
+                android:layout_width="280dp"
+                android:layout_height="135dp"
+                android:layout_margin="8dp"
+                android:visibility="visible"
+                android:background="@drawable/rounded_button"
+                android:fontFamily="@font/atop"
+                android:layout_gravity="center"
+                android:text="÷"
+                android:textColor="@color/black"
+                android:textSize="70sp" />
+        </LinearLayout>
     </LinearLayout>
 
+    <!-- Math Expression -->
     <TextView
         android:id="@+id/mathExpressionBackground"
         android:layout_width="304dp"
@@ -139,33 +157,15 @@
         android:textColor="@color/black"
         android:gravity="center"
         android:textSize="35dp"
-        android:text="4 + 4"
         android:visibility="gone"
         android:fontFamily="@font/beachday"
         android:inputType="number"
         android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/symbolButtons"
+        app:layout_constraintTop_toTopOf="@id/topContentGuide"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
-
-    <Button
-        android:id="@+id/restartGameButton"
-        android:layout_width="100dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="52dp"
-        android:layout_marginBottom="72dp"
-        android:background="@drawable/rounded_button"
-        android:drawablePadding="-2dp"
-        android:fontFamily="@font/atop"
-        android:gravity="center"
-        android:text="Restart"
-        android:textColor="@color/black"
-        android:textSize="18dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
+    <!-- Answer Buttons -->
     <LinearLayout
         android:id="@+id/answerButtons"
         android:layout_width="wrap_content"
@@ -237,8 +237,43 @@
                 android:textSize="40sp" />
         </LinearLayout>
     </LinearLayout>
-    <!-- Generate New Expression -->
 
+    <!-- Progress Bar -->
+
+    <!-- Restart Button -->
+
+    <ProgressBar
+        android:id="@+id/timeBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="288dp"
+        android:layout_height="16dp"
+        android:layout_marginTop="108dp"
+        android:max="100"
+        android:progress="0"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/gameSiteTitle" />
+
+    <Button
+        android:id="@+id/restartGameButton"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="52dp"
+        android:layout_marginBottom="72dp"
+        android:background="@drawable/rounded_button"
+        android:drawablePadding="-2dp"
+        android:fontFamily="@font/atop"
+        android:gravity="center"
+        android:text="Restart"
+        android:textColor="@color/black"
+        android:textSize="18dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Next Expression Button -->
     <Button
         android:id="@+id/newExpressionButton"
         android:layout_width="100dp"
@@ -254,22 +289,7 @@
         android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.829"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <TextView
-        android:id="@+id/answerFeedbackText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="264dp"
-        android:fontFamily="@font/beachday"
-        android:gravity="center"
-        android:text="Correct!"
-        android:textColor="@color/black"
-        android:textSize="25dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintHorizontal_bias="0.829" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

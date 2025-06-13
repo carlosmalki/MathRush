@@ -5,12 +5,15 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,7 +51,7 @@ public class GameActivity extends AppCompatActivity {
     private static final String STREAK_KEY = "StreakRecord";
 
     private Button additionButton, subtractionButton, multiplicationButton, divisionButton, choiceOne, choiceTwo, choiceThree, choiceFour, newExpressionButton, restartGameButton;
-    private TextView gameSiteTitle, mathExpressionBackground, answerFeedbackText, pointsNumber, streakRecordNumber;
+    private TextView gameSiteTitle, mathExpressionBackground, pointsNumber, streakRecordNumber;
     private Random random;
 
     private ProgressBar timerBar;
@@ -106,7 +109,6 @@ public class GameActivity extends AppCompatActivity {
         streakRecordNumber = findViewById(R.id.streakRecordNumber);
         pointsNumber = findViewById(R.id.pointsNumber);
         newExpressionButton = findViewById(R.id.newExpressionButton);
-        answerFeedbackText = findViewById(R.id.answerFeedbackText);
         timerBar = findViewById(R.id.timeBar);
 
 
@@ -161,6 +163,7 @@ public class GameActivity extends AppCompatActivity {
             multiplicationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
             divisionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
             subtractionButton.setVisibility(View.INVISIBLE);
+            additionButton.setVisibility(View.INVISIBLE);
             multiplicationButton.setVisibility(View.INVISIBLE);
             divisionButton.setVisibility(View.INVISIBLE);
 
@@ -213,6 +216,7 @@ public class GameActivity extends AppCompatActivity {
             multiplicationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
             divisionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
             additionButton.setVisibility(View.INVISIBLE);
+            subtractionButton.setVisibility(View.INVISIBLE);
             multiplicationButton.setVisibility(View.INVISIBLE);
             divisionButton.setVisibility(View.INVISIBLE);
 
@@ -263,6 +267,7 @@ public class GameActivity extends AppCompatActivity {
             subtractionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
             divisionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
             additionButton.setVisibility(View.INVISIBLE);
+            multiplicationButton.setVisibility(View.INVISIBLE);
             subtractionButton.setVisibility(View.INVISIBLE);
             divisionButton.setVisibility(View.INVISIBLE);
 
@@ -313,6 +318,7 @@ public class GameActivity extends AppCompatActivity {
             additionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
             subtractionButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
             multiplicationButton.setBackground(ContextCompat.getDrawable(this, R.drawable.rounded_button));
+            divisionButton.setVisibility(View.INVISIBLE);
             subtractionButton.setVisibility(View.INVISIBLE);
             multiplicationButton.setVisibility(View.INVISIBLE);
             additionButton.setVisibility(View.INVISIBLE);
@@ -335,8 +341,6 @@ public class GameActivity extends AppCompatActivity {
         newExpressionButton.setOnClickListener(v -> {
             startChoiceButtonsAnimation();
             newExpressionButton.setVisibility(View.INVISIBLE);
-            answerFeedbackText.setVisibility(View.INVISIBLE);
-            answerFeedbackText.setText("");
 
             // Vi genererar rätt typ av uttryck baserat på symbolen som spelaren har valt att spela med
             if (selectedOperator == "+") {
@@ -387,6 +391,26 @@ public class GameActivity extends AppCompatActivity {
         choiceFour.setOnClickListener(v -> {
             showCorrectAnswer(choiceFour);
         });
+    }
+
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(adjustDensity(newBase, 392)); // 392 = Pixel 8a smallest width dp
+    }
+
+    public static Context adjustDensity(Context context, float targetSwDp) {
+        Configuration configuration = context.getResources().getConfiguration();
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+
+        float targetDensity = metrics.widthPixels / targetSwDp;
+        int targetDensityDpi = (int) (targetDensity * 160);
+
+        metrics.density = targetDensity;
+        metrics.scaledDensity = targetDensity;
+        metrics.densityDpi = targetDensityDpi;
+
+        Resources newResources = new Resources(context.getAssets(), metrics, configuration);
+        return context.createConfigurationContext(configuration);
     }
 
     // Denna metod är för att generera addition uttryck för spelet
@@ -565,8 +589,6 @@ public class GameActivity extends AppCompatActivity {
             correctAnswerSound.start();
             makingChoiceButtonsUnclickable();
             choicebutton.setBackground(ContextCompat.getDrawable(this, R.drawable.correct_answer_color));
-            answerFeedbackText.setTextColor(Color.parseColor("#0E8A07"));
-            answerFeedbackText.setText("Correct!");
 
             // Vi sätter denna stil på knappen alltid när spelaren svarar rätt
             newExpressionButton.setText("next");
@@ -577,8 +599,6 @@ public class GameActivity extends AppCompatActivity {
                     TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics());
             newExpressionButton.setLayoutParams(params);
 
-
-            answerFeedbackText.setVisibility(View.VISIBLE);
             removeChoiceButtonAnimation();
             givePoint();
             newExpressionButton.setVisibility(View.VISIBLE);
@@ -605,9 +625,6 @@ public class GameActivity extends AppCompatActivity {
             wrongAnswerSound.start();
             makingChoiceButtonsUnclickable();
             choicebutton.setBackground(ContextCompat.getDrawable(this, R.drawable.wrong_answer_color));
-            answerFeedbackText.setTextColor(Color.parseColor("#9E1010"));
-            answerFeedbackText.setText("Wrong! Correct answer is: "+integerSum);
-            answerFeedbackText.setVisibility(View.VISIBLE);
             removeChoiceButtonAnimation();
             resetGamePoints();
 
@@ -835,9 +852,7 @@ public class GameActivity extends AppCompatActivity {
         restartGameButton.setVisibility(View.INVISIBLE);
         setChoiceButtonsVisibility(View.INVISIBLE);
         newExpressionButton.setVisibility(View.INVISIBLE);
-        answerFeedbackText.setVisibility(View.INVISIBLE);
         timerBar.setVisibility(View.INVISIBLE);
-        answerFeedbackText.setText("");
         newExpressionButton.clearAnimation();
 
         setSymbolButtonVisibility(View.VISIBLE);
@@ -971,9 +986,6 @@ public class GameActivity extends AppCompatActivity {
             wrongAnswerSound.start();
             makingChoiceButtonsUnclickable();
             choicebutton.setBackground(ContextCompat.getDrawable(this, R.drawable.wrong_answer_color));
-            answerFeedbackText.setTextColor(Color.parseColor("#9E1010"));
-            answerFeedbackText.setText("Time is out!");
-            answerFeedbackText.setVisibility(View.VISIBLE);
             removeChoiceButtonAnimation();
             resetGamePoints();
             newExpressionButton.setVisibility(View.VISIBLE);
